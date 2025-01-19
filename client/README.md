@@ -23,10 +23,6 @@ Make sure you have the following installed on your machine:
    ```bash
    npm install
    ```
-4. Create a `.env` file in the root directory and configure the required environment variables:
-   ```env
-   VITE_API_BASE_URL=your_api_base_url
-   ```
 
 ### Running the Application
 - Development:
