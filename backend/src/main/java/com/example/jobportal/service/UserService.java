@@ -20,13 +20,15 @@ public class UserService {
     BCryptPasswordEncoder encoder;
 
     public ResponseEntity<Object> updateUser(Integer id,String email, String username, String password) {
-        User userExistingData;
+
         try {
             Optional<User> userData = userDao.findById(id);
 
             if (userData.isEmpty()) {
                 return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
             }
+
+            User userExistingData;
 
             if (email.equals(userData.get().getEmail())) {
                 return new ResponseEntity<>("Email address already in use", HttpStatus.CONFLICT);
@@ -35,11 +37,7 @@ public class UserService {
             userExistingData = userData.get();
 
 
-            if (email == null) {
-                userExistingData.setEmail(userData.get().getEmail());
-            }else {
-                userExistingData.setEmail(email);
-            }
+            userExistingData.setEmail(email);
             if (username == null) {
                 userExistingData.setUsername(userData.get().getUsername());
             } else {
