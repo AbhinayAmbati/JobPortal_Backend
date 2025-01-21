@@ -34,6 +34,7 @@ public class AuthService {
 
     @Autowired
     BCryptPasswordEncoder encoder;
+
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
