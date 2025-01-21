@@ -3,6 +3,7 @@ package com.example.jobportal.controllers;
 import com.example.jobportal.models.User;
 import com.example.jobportal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,7 +14,7 @@ public class UserController {
     UserService userService;
 
     @PutMapping("update")
-    public Object updateUser(@RequestBody User user){
+    public ResponseEntity<Object> updateUser(@RequestBody User user){
         return userService.updateUser(
                 user.getId(),
                 user.getEmail(),

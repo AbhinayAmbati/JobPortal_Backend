@@ -20,7 +20,8 @@ public class UserService {
     BCryptPasswordEncoder encoder;
 
     public ResponseEntity<Object> updateUser(Integer id,String email, String username, String password) {
-        try{
+        User userExistingData;
+        try {
             Optional<User> userData = userDao.findById(id);
 
             if (userData.isEmpty()) {
@@ -31,17 +32,28 @@ public class UserService {
                 return new ResponseEntity<>("Email address already in use", HttpStatus.CONFLICT);
             }
 
-            User userExistingData = userData.get();
+            userExistingData = userData.get();
 
-            String hashedPassword = encoder.encode(password);
 
-            userExistingData.setEmail(email);
-            userExistingData.setUsername(username);
-            userExistingData.setPassword(hashedPassword);
-            userDao.save(userExistingData);
+            if (email == null) {
+                userExistingData.setEmail(userData.get().getEmail());
+            }else {
+                userExistingData.setEmail(email);
+            }
+            if (username == null) {
+                userExistingData.setUsername(userData.get().getUsername());
+            } else {
+                userExistingData.setUsername(username);
+            }
+            if (password == null) {
+                userExistingData.setPassword(userData.get().getPassword());
+            } else {
+                userExistingData.setPassword(encoder.encode(password));
+            }
+        userDao.save(userExistingData);
 
-            return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
-        }catch (Exception e){
+        return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
+    }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
