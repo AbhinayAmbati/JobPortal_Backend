@@ -119,7 +119,7 @@ public class AuthService {
             Optional<User> userData = authDao.findByEmail(email);
 
             if (userData.isEmpty()) {
-                return new ResponseEntity<>("Email is not registered", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Email is not registered.", HttpStatus.NOT_FOUND);
             }
 
             User user = userData.get();
