@@ -69,7 +69,7 @@ public class AuthService {
             User user = userData.get();
 
             if (!passwordEncoder.matches(password, user.getPassword())) {
-                return new ResponseEntity<>("Incorrect password", HttpStatus.UNAUTHORIZED);
+                return new ResponseEntity<>("Incorrect password.", HttpStatus.UNAUTHORIZED);
             }
 
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
