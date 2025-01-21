@@ -32,4 +32,11 @@ public class AuthController {
         );
     }
 
+    @PostMapping("forgotpassword")
+    public ResponseEntity<Object> forgotPassword(@RequestBody  User user) {
+        return authService.forgotPassword(
+                user.getEmail()
+        );
+    }
+
 }

@@ -5,15 +5,17 @@ import com.example.jobportal.dao.AuthDao;
 import com.example.jobportal.models.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Date;
@@ -26,6 +28,9 @@ public class AuthService {
 
     @Autowired
     AuthDao authDao;
+
+    @Autowired
+    MailSender mailSender;
 
     @Autowired
     BCryptPasswordEncoder encoder;
@@ -108,4 +113,27 @@ public class AuthService {
         }
     }
 
+    public ResponseEntity<Object> forgotPassword(String email) {
+
+        try{
+            Optional<User> userData = authDao.findByEmail(email);
+
+            if (userData.isEmpty()) {
+                return new ResponseEntity<>("Email is not registered", HttpStatus.NOT_FOUND);
+            }
+
+            User user = userData.get();
+
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+
+            mailMessage.setTo(email);
+            mailMessage.setSubject("Forgot Password");
+            mailMessage.setText("Password Reset");
+            mailSender.send(mailMessage);
+
+            return new ResponseEntity<>(mailMessage, HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>("An error occurred during the process: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
