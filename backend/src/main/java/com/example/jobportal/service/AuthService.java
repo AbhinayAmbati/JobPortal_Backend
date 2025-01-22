@@ -6,6 +6,7 @@ import com.example.jobportal.models.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +33,7 @@ public class AuthService {
     AuthDao authDao;
 
     @Autowired
-    MailSender mailSender;
+    JavaMailSender mailSender;
 
     @Autowired
     BCryptPasswordEncoder encoder;
@@ -116,7 +119,7 @@ public class AuthService {
 
     public ResponseEntity<Object> forgotPassword(String email) {
 
-        try{
+        try {
             Optional<User> userData = authDao.findByEmail(email);
 
             if (userData.isEmpty()) {
@@ -125,16 +128,99 @@ public class AuthService {
 
             User user = userData.get();
 
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
 
-            mailMessage.setTo(email);
-            mailMessage.setSubject("Forgot Password");
-            mailMessage.setText("Password Reset");
-            mailSender.send(mailMessage);
+            String htmlContent = """
+        <html>
+        <head>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 0;
+                    padding: 0;
+                    background-color: #f4f4f4;
+                }
+                .email-container {
+                    max-width: 600px;
+                    margin: 20px auto;
+                    background: #ffffff;
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    overflow: hidden;
+                }
+                .email-header {
+                    background-color: #007BFF;
+                    color: white;
+                    padding: 20px;
+                    text-align: center;
+                    font-size: 24px;
+                    font-weight: bold;
+                }
+                .email-body {
+                    padding: 20px;
+                    color: #333333;
+                    line-height: 1.6;
+                }
+                .email-footer {
+                    background-color: #f4f4f4;
+                    text-align: center;
+                    padding: 10px;
+                    font-size: 12px;
+                    color: #888888;
+                }
+                .reset-button {
+                    display: inline-block;
+                    margin: 20px 0;
+                    background-color: #007BFF;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                    font-weight: bold;
+                    width : 120px;
+                    text-align: center;
+                }
+                .reset-button:hover {
+                    background-color: #0056b3;
+                }
+                .password{
+                color: white;
+                }
+                .spam{
+                color: red;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="email-container">
+                <div class="email-header">
+                    Password Reset Request
+                </div>
+                <div class="email-body">
+                    <p>Hello,</p>
+                    <p>We received a request to reset your password. If you made this request, please click the button below to reset your password:</p>
+                    <a href="https://spring.io/projects/spring-boot" class="reset-button"><p class="password">Reset Password</p></a>
+                    <p class="spam">If you did not request a password reset, please ignore this email.</p>
+                </div>
+                <div class="email-footer">
+                    &copy; 2025 JOBPortal. All rights reserved.
+                </div>
+            </div>
+        </body>
+        </html>
+        """;
 
-            return new ResponseEntity<>(mailMessage, HttpStatus.OK);
-        }catch (Exception e){
+            // Set email properties
+            helper.setTo(email);
+            helper.setSubject("Forgot Password");
+            helper.setText(htmlContent, true);
+
+            mailSender.send(mimeMessage);
+
+            return new ResponseEntity<>("Password reset email sent successfully", HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>("An error occurred during the process: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 }
