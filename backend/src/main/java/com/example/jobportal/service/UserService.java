@@ -50,7 +50,7 @@ public class UserService {
             }
         userDao.save(userExistingData);
 
-        return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
+        return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
     }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
