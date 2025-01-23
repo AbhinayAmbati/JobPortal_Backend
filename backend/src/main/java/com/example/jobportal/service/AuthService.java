@@ -1,6 +1,8 @@
 package com.example.jobportal.service;
 
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.example.jobportal.dao.AuthDao;
 import com.example.jobportal.models.User;
 import io.jsonwebtoken.Jwts;
@@ -18,10 +20,12 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @Configuration
@@ -36,29 +40,37 @@ public class AuthService {
     JavaMailSender mailSender;
 
     @Autowired
+    Cloudinary cloudinary;
+
+    @Autowired
     BCryptPasswordEncoder encoder;
 
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
 
-    public ResponseEntity<Object> signUp(String email, String username,  String password) {
-        try{
-            if(authDao.findByEmail(email).isPresent()){
+    public ResponseEntity<Object> signUp(String email, String username, String password) {
+        try {
+            if (authDao.findByEmail(email).isPresent()) {
                 return new ResponseEntity<>(email + " is already registered", HttpStatus.CONFLICT);
             }
 
             String hashedPassword = encoder.encode(password);
 
+            // Create a new user and save it to the database
             User user = new User();
             user.setEmail(email);
             user.setUsername(username);
             user.setPassword(hashedPassword);
             authDao.save(user);
+
             return new ResponseEntity<>(user, HttpStatus.CREATED);
-        }catch (Exception e){
+
+        } catch (Exception e) {
+            // Handle errors gracefully
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
 
 
     public ResponseEntity<Object> signIn(String email, String password) {
@@ -210,7 +222,6 @@ public class AuthService {
         </html>
         """;
 
-            // Set email properties
             helper.setTo(email);
             helper.setSubject("Forgot Password");
             helper.setText(htmlContent, true);

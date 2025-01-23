@@ -59,4 +59,14 @@ public class User {
     private String username;
     private String password;
 
+    public String getProfileimage() {
+        return profileimage;
+    }
+
+    public void setProfileimage(String profileimage) {
+        this.profileimage = profileimage;
+    }
+
+    private String profileimage;
+
 }
