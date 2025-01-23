@@ -24,7 +24,7 @@ public class UserController {
         );
     }
 
-    @PutMapping("update/profile")
+    @PutMapping("update/image")
     public ResponseEntity<Object> updateUserProfileImage(@RequestParam Integer id,@RequestParam("image") MultipartFile image) throws IOException {
         return userService.updateUserProfileImage(
                 id,
