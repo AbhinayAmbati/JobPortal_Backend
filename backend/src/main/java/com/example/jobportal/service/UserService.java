@@ -34,7 +34,7 @@ public class UserService {
             Optional<User> userData = userDao.findById(id);
 
             if (userData.isEmpty()) {
-                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
             }
 
             User userExistingData;
