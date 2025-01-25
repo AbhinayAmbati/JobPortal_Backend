@@ -40,7 +40,7 @@ public class UserService {
             User userExistingData;
 
             if (email.equals(userData.get().getEmail())) {
-                return new ResponseEntity<>("Email address already in use", HttpStatus.CONFLICT);
+                return new ResponseEntity<>("Email address already in use.", HttpStatus.CONFLICT);
             }
 
             userExistingData = userData.get();
