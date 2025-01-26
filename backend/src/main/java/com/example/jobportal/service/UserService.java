@@ -87,17 +87,30 @@ public class UserService {
         if (userData.isEmpty()) {
             return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
         }
-        User userExistingData;
+        User userExistingData = userData.get();
+
+        String oldImageUrl = userExistingData.getProfileimage();
+
+        if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+            String publicId = extractPublicIdFromUrl(oldImageUrl);
+
+            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+        }
 
         Map uploadImage = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
         String imageUrl = uploadImage.get("url").toString();
 
-        userExistingData = userData.get();
         userExistingData.setProfileimage(imageUrl);
-
         userDao.save(userExistingData);
 
         return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
-
     }
+
+    private String extractPublicIdFromUrl(String url) {
+        String[] parts = url.split("/");
+        String publicIdWithVersion = parts[parts.length - 1];
+        String[] publicIdParts = publicIdWithVersion.split("_");
+        return publicIdParts[0];  // Return the public ID without the version
+    }
+
 }
