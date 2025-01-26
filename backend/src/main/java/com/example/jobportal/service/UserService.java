@@ -103,7 +103,7 @@ public class UserService {
         userExistingData.setProfileimage(imageUrl);
         userDao.save(userExistingData);
 
-        return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
+        return new ResponseEntity<>("User Updated Successfully. ", HttpStatus.OK);
     }
 
     private String extractPublicIdFromUrl(String url) {
