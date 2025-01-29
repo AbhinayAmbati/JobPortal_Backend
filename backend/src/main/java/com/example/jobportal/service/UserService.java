@@ -103,14 +103,12 @@ public class UserService {
         userExistingData.setProfileimage(imageUrl);
         userDao.save(userExistingData);
 
-        return new ResponseEntity<>("User Updated Successfully. ", HttpStatus.OK);
+        return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
     }
 
     private String extractPublicIdFromUrl(String url) {
-        String[] parts = url.split("/");
-        String publicIdWithVersion = parts[parts.length - 1];
-        String[] publicIdParts = publicIdWithVersion.split("_");
-        return publicIdParts[0];  // Return the public ID without the version
+        String fileName = url.substring(url.lastIndexOf("/") + 1);
+        return fileName.split("_")[0];
     }
 
 }
