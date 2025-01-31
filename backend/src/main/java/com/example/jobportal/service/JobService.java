@@ -25,4 +25,18 @@ public class JobService {
         return jobDao.findById(id);
 
     }
+
+    public Object addJob(String jobName, String jobCompanyName, String jobDescription, String jobLocation, String jobType, String jobContactEMail, String jobSalaryRange, String jobRequirements) {
+        JobDetails jobDetails = new JobDetails();
+        jobDetails.setJobName(jobName);
+        jobDetails.setJobCompanyName(jobCompanyName);
+        jobDetails.setJobDescription(jobDescription);
+        jobDetails.setJobLocation(jobLocation);
+        jobDetails.setJobType(jobType);
+        jobDetails.setJobContactEMail(jobContactEMail);
+        jobDetails.setJobSalaryRange(jobSalaryRange);
+        jobDetails.setJobRequirements(jobRequirements);
+        jobDao.save(jobDetails);
+        return jobDetails;
+    }
 }
