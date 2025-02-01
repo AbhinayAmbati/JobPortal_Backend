@@ -24,23 +24,14 @@ public class UserController {
         );
     }
 
-    @PutMapping("update/image")
-    public ResponseEntity<Object> updateUserProfileImage(@RequestParam Integer id,@RequestParam("image") MultipartFile image) throws IOException {
-        return userService.updateUserProfileImage(
-                id,
-                image
-        );
-    }
-
     @PutMapping("update")
-    public ResponseEntity<Object> updateUser(@RequestBody User user){
-        return userService.updateUser(
-                user.getId(),
-                user.getEmail(),
-                user.getUsername(),
-                user.getPassword(),
-                user.getProfileimage()
-        );
+    public ResponseEntity<Object> updateUser(
+            @RequestParam Integer id,
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam String email,
+            @RequestParam String username
+    ) {
+        return userService.updateUser(id, image, email, username);
     }
 
 }

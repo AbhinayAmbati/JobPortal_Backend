@@ -28,8 +28,7 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder encoder;
 
-    public ResponseEntity<Object> updateUser(Integer id,String email, String username, String password, String profileimage) {
-
+    public ResponseEntity<Object> updateUser(Integer id, MultipartFile image, String email, String username) {
         try {
             Optional<User> userData = userDao.findById(id);
 
@@ -37,39 +36,41 @@ public class UserService {
                 return new ResponseEntity<>("User not found.", HttpStatus.NOT_FOUND);
             }
 
-            User userExistingData;
+            User userExistingData = userData.get();
 
-            if (email.equals(userData.get().getEmail())) {
+            // Check if the new email is already in use by another user
+            if (userDao.findByEmail(email).isPresent()) {
                 return new ResponseEntity<>("Email address already in use.", HttpStatus.CONFLICT);
             }
 
-            userExistingData = userData.get();
-
-
             userExistingData.setEmail(email);
-            if (username == null) {
-                userExistingData.setUsername(userData.get().getUsername());
-            } else {
-                userExistingData.setUsername(username);
-            }
-            if (password == null) {
-                userExistingData.setPassword(userData.get().getPassword());
-            } else {
-                userExistingData.setPassword(encoder.encode(password));
-            }
-            if(profileimage == null){
-                userExistingData.setProfileimage(userData.get().getProfileimage());
-            }else{
-                userExistingData.setProfileimage(profileimage);
-            }
-        userDao.save(userExistingData);
+            userExistingData.setUsername(username);
 
-        return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
-    }catch (Exception e){
+            if (image != null && !image.isEmpty()) {
+                // Delete old image if exists
+                String oldImageUrl = userExistingData.getProfileimage();
+                if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
+                    try {
+                        String publicId = oldImageUrl.substring(oldImageUrl.lastIndexOf("/") + 1, oldImageUrl.lastIndexOf("."));
+                        cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                    } catch (Exception e) {
+                        // Log error but continue with upload of new image
+                        return new ResponseEntity<>("Error deleting old image from Cloudinary: " + e.getMessage(),HttpStatus.LOOP_DETECTED);
+                    }
+                }
+
+                // Upload new image
+                Map uploadImage = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
+                String imageUrl = uploadImage.get("url").toString();
+                userExistingData.setProfileimage(imageUrl);
+            }
+
+            userDao.save(userExistingData);
+            return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
+        } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
     public ResponseEntity<Object> getUserProfile(@RequestParam Integer id) {
         try{
             Optional<User> userData = userDao.findById(id);
@@ -80,35 +81,6 @@ public class UserService {
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    public ResponseEntity<Object> updateUserProfileImage(Integer id, MultipartFile image) throws IOException {
-        Optional<User> userData = userDao.findById(id);
-        if (userData.isEmpty()) {
-            return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
-        }
-        User userExistingData = userData.get();
-
-        String oldImageUrl = userExistingData.getProfileimage();
-
-        if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
-            String publicId = extractPublicIdFromUrl(oldImageUrl);
-
-            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-        }
-
-        Map uploadImage = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-        String imageUrl = uploadImage.get("url").toString();
-
-        userExistingData.setProfileimage(imageUrl);
-        userDao.save(userExistingData);
-
-        return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
-    }
-
-    private String extractPublicIdFromUrl(String url) {
-        String fileName = url.substring(url.lastIndexOf("/") + 1);
-        return fileName.split("_")[0];
     }
 
 }
