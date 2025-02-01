@@ -105,5 +105,13 @@ public class JobDetails {
     private LocalDateTime createdOn;
     private String jobRequirements;
     private String jobContactEMail;
+    private String jobApplyLink;
 
+    public String getJobApplyLink() {
+        return jobApplyLink;
+    }
+
+    public void setJobApplyLink(String jobApplyLink) {
+        this.jobApplyLink = jobApplyLink;
+    }
 }

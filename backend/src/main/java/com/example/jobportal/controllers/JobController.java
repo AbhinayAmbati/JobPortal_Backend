@@ -34,7 +34,8 @@ public class JobController {
                 jobDetails.getJobType(),
                 jobDetails.getJobContactEMail(),
                 jobDetails.getJobSalaryRange(),
-                jobDetails.getJobRequirements()
+                jobDetails.getJobRequirements(),
+                jobDetails.getJobApplyLink()
         );
     }
 

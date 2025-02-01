@@ -26,7 +26,7 @@ public class JobService {
 
     }
 
-    public Object addJob(String jobName, String jobCompanyName, String jobDescription, String jobLocation, String jobType, String jobContactEMail, String jobSalaryRange, String jobRequirements) {
+    public Object addJob(String jobName, String jobCompanyName, String jobDescription, String jobLocation, String jobType, String jobContactEMail, String jobSalaryRange, String jobRequirements, String jobApplyLink) {
         JobDetails jobDetails = new JobDetails();
         jobDetails.setJobName(jobName);
         jobDetails.setJobCompanyName(jobCompanyName);
@@ -36,6 +36,7 @@ public class JobService {
         jobDetails.setJobContactEMail(jobContactEMail);
         jobDetails.setJobSalaryRange(jobSalaryRange);
         jobDetails.setJobRequirements(jobRequirements);
+        jobDetails.setJobApplyLink(jobApplyLink);
         jobDao.save(jobDetails);
         return jobDetails;
     }
