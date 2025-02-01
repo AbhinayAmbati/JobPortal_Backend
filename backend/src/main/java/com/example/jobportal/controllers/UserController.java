@@ -24,14 +24,35 @@ public class UserController {
         );
     }
 
+    @PutMapping("user-info")
+    public ResponseEntity<Object> updateUserProfileInfo(@RequestParam Integer id,@RequestBody User user){
+
+        return userService.updateUserProfileInfo(
+                id,
+                user.getCurrentPosition(),
+                user.getEducation(),
+                user.getLocation(),
+                user.getPhone(),
+                user.getGitHubUrl(),
+                user.getLinkedInUrl(),
+                user.getPortfolioUrl()
+        );
+    }
+
     @PutMapping("update")
     public ResponseEntity<Object> updateUser(
             @RequestParam Integer id,
             @RequestParam(value = "image", required = false) MultipartFile image,
-            @RequestParam String email,
-            @RequestParam String username
+            @RequestParam String username,
+            @RequestParam String currentPosition,
+            @RequestParam String location,
+            @RequestParam String education,
+            @RequestParam String phone,
+            @RequestParam String portfolio,
+            @RequestParam String github,
+            @RequestParam String linkedin
     ) {
-        return userService.updateUser(id, image, email, username);
+        return userService.updateUser(id, image, username,currentPosition,location,education,phone,portfolio,github,linkedin);
     }
 
 }

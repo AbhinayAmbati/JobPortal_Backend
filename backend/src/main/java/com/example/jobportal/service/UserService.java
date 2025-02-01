@@ -40,7 +40,13 @@ public class UserService {
     @Autowired
     private PasswordResetDao passwordResetDao;
 
-    public ResponseEntity<Object> updateUser(Integer id, MultipartFile image, String email, String username) {
+    public ResponseEntity<Object> updateUser(Integer id, MultipartFile image,String username,String currentPosition,
+                                              String location,
+                                              String education,
+                                              String phone,
+                                              String portfolio,
+                                              String github,
+                                              String linkedin ) {
         try {
             Optional<User> userData = userDao.findById(id);
 
@@ -50,12 +56,7 @@ public class UserService {
 
             User userExistingData = userData.get();
 
-            // Check if the new email is already in use by another user
-            if (userDao.findByEmail(email).isPresent()) {
-                return new ResponseEntity<>("Email address already in use.", HttpStatus.CONFLICT);
-            }
 
-            userExistingData.setEmail(email);
             userExistingData.setUsername(username);
 
             if (image != null && !image.isEmpty()) {
@@ -76,6 +77,14 @@ public class UserService {
                 String imageUrl = uploadImage.get("url").toString();
                 userExistingData.setProfileimage(imageUrl);
             }
+
+            userExistingData.setCurrentPosition(currentPosition);
+            userExistingData.setLocation(location);
+            userExistingData.setEducation(education);
+            userExistingData.setPhone(phone);
+            userExistingData.setGitHubUrl(github);
+            userExistingData.setLinkedInUrl(linkedin);
+            userExistingData.setPortfolioUrl(portfolio);
 
             userDao.save(userExistingData);
             return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
@@ -138,5 +147,29 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(newPassword));
         userDao.save(user);
         passwordResetDao.delete(resetToken);
+    }
+
+    public ResponseEntity<Object> updateUserProfileInfo(Integer id,String currentPosition, String education, String location, String phone, String gitHubUrl, String linkedInUrl, String portfolioUrl) {
+        try{
+
+            Optional<User> userData = userDao.findById(id);
+            if (userData.isEmpty()) {
+                return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
+            }
+            User user = userData.get();
+
+            user.setCurrentPosition(currentPosition);
+            user.setEducation(education);
+            user.setLocation(location);
+            user.setPhone(phone);
+            user.setGitHubUrl(gitHubUrl);
+            user.setLinkedInUrl(linkedInUrl);
+            user.setPortfolioUrl(portfolioUrl);
+            userDao.save(user);
+            return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
+
+        }catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }
