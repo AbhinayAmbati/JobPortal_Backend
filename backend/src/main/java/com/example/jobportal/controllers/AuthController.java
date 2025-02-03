@@ -64,85 +64,113 @@ public class AuthController {
         String resetUrl = "http://localhost:5173" + "/reset-password/" + token;
         String subject = "Password Reset Request";
         String content = String.format("""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Password Reset</title>
-                <style>
-                    body {
-                        font-family: Arial, sans-serif;
-                        line-height: 1.6;
-                        color: #333333;
-                        margin: 0;
-                        padding: 0;
-                    }
-                    .container {
-                        max-width: 600px;
-                        margin: 0 auto;
-                        padding: 20px;
-                        background-color: #ffffff;
-                    }
-                    .header {
-                        background-color: #4A90E2;
-                        padding: 20px;
-                        text-align: center;
-                        border-radius: 5px 5px 0 0;
-                    }
-                    .header h1 {
-                        color: #ffffff;
-                        margin: 0;
-                        font-size: 24px;
-                    }
-                    .content {
-                        padding: 30px 20px;
-                        background-color: #f9f9f9;
-                        border-radius: 0 0 5px 5px;
-                    }
-                    .button {
-                        display: inline-block;
-                        padding: 12px 24px;
-                        background-color: #4A90E2;
-                        color: #ffffff;
-                        text-decoration: none;
-                        border-radius: 5px;
-                        margin: 20px 0;
-                    }
-                    .footer {
-                        text-align: center;
-                        margin-top: 20px;
-                        font-size: 12px;
-                        color: #666666;
-                    }
-                    .note {
-                        font-size: 14px;
-                        color: #666666;
-                        margin-top: 20px;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <div class="header">
-                        <h1>Password Reset Request</h1>
-                    </div>
-                    <div class="content">
-                        <p>Hello,</p>
-                        <p>We received a request to reset your password. Click the button below to create a new password:</p>
-                        <div style="text-align: center;">
-                            <a href="%s" class="button">Reset Password</a>
-                        </div>
-                        <p class="note">This link will expire in 30 minutes for security reasons.</p>
-                        <p class="note">If you didn't request a password reset, please ignore this email or contact support if you have concerns.</p>
-                    </div>
-                    <div class="footer">
-                        <p>This is an automated message, please do not reply to this email.</p>
-                    </div>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Password Reset</title>
+        <style>
+            body {
+                font-family: 'Segoe UI', Arial, sans-serif;
+                line-height: 1.7;
+                color: #2d3748;
+                margin: 0;
+                padding: 0;
+                background-color: #f7fafc;
+            }
+            .container {
+                max-width: 600px;
+                margin: 40px auto;
+                padding: 0;
+                background-color: #ffffff;
+                border-radius: 12px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            }
+            .header {
+                background: linear-gradient(135deg, #4299e1 0%%, #3182ce 100%%);
+                padding: 32px 20px;
+                text-align: center;
+                border-radius: 12px 12px 0 0;
+            }
+            .header h1 {
+                color: #ffffff;
+                margin: 0;
+                font-size: 28px;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+            }
+            .content {
+                padding: 40px 32px;
+                background-color: #ffffff;
+                border-radius: 0 0 12px 12px;
+            }
+            .button {
+                display: inline-block;
+                padding: 14px 32px;
+                background: linear-gradient(135deg, #4299e1 0%%, #3182ce 100%%);
+                color: #ffffff;
+                text-decoration: none;
+                border-radius: 8px;
+                margin: 24px 0;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+                box-shadow: 0 2px 4px rgba(66, 153, 225, 0.3);
+            }
+            .button:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 8px rgba(66, 153, 225, 0.4);
+            }
+            .note {
+                font-size: 14px;
+                color: #718096;
+                margin-top: 24px;
+                padding: 16px;
+                background-color: #f8fafc;
+                border-radius: 8px;
+                border-left: 4px solid #4299e1;
+            }
+            .footer {
+                text-align: center;
+                margin-top: 32px;
+                padding-top: 24px;
+                border-top: 1px solid #e2e8f0;
+                font-size: 13px;
+                color: #718096;
+            }
+            p {
+                margin: 16px 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>Password Reset Request</h1>
+            </div>
+            <div class="content">
+                <p>Hello,</p>
+                <p>We received a request to reset your password. To create a new password, please click the secure button below:</p>
+                <div style="text-align: center;">
+                    <a href="%s" class="button">Reset Password</a>
                 </div>
-            </body>
-            </html>
-            """, resetUrl);
+                <div class="note">
+                    <strong>Security Notice:</strong>
+                    <p style="margin: 8px 0 0 0">• This link will expire in 30 minutes</p>
+                    <p style="margin: 4px 0 0 0">• If you didn't request this reset, please ignore this email</p>
+                    <p style="margin: 4px 0 0 0">• Contact our support team if you have any concerns</p>
+                </div>
+            </div>
+            <div class="footer">
+                <p>This is an automated message. Please do not reply to this email.</p>
+                <p style="margin-top: 8px;">© 2025 Job Portal. All rights reserved.</p>
+            </div>
+        </div>
+    </body>
+    </html>
+""", resetUrl);
+
 
         // Create MimeMessage instead of SimpleMailMessage to support HTML
         MimeMessage mimeMessage = mailSender.createMimeMessage();
