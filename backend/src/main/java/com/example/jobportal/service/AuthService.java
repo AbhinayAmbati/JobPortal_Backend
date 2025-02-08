@@ -51,7 +51,7 @@ public class AuthService {
     public ResponseEntity<Object> signUp(String email, String username, String password) {
         try {
             if (authDao.findByEmail(email).isPresent()) {
-                return new ResponseEntity<>(email + " is already registered", HttpStatus.CONFLICT);
+                return new ResponseEntity<>(email + " is already registered.", HttpStatus.CONFLICT);
             }
 
             String hashedPassword = encoder.encode(password);
