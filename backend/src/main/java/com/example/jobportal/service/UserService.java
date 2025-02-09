@@ -87,7 +87,7 @@ public class UserService {
             userExistingData.setPortfolioUrl(portfolio);
 
             userDao.save(userExistingData);
-            return new ResponseEntity<>("User Updated Successfully.", HttpStatus.OK);
+            return new ResponseEntity<>("User Updated Successfully", HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
